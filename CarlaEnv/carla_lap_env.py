@@ -107,7 +107,7 @@ class CarlaLapEnv(gym.Env):
             # sub_dir = sub_dirs[0]
             # carla_path = os.path.join(sub_dir, "LinuxNoEditor", "CarlaUE4.sh")
             launch_command = [carla_path]
-            launch_command += ["Town07"]
+            launch_command += ["/Game/Carla/Maps/Town07"]
             if synchronous: launch_command += ["-benchmark"]
             launch_command += ["-fps=%i" % fps]
             launch_command += ["-prefernvidia"]
@@ -118,7 +118,7 @@ class CarlaLapEnv(gym.Env):
             # for line in self.carla_process.stdout:
             #     if "LogCarla: Number Of Vehicles" in line:
             #         break
-            time.sleep(40)
+            time.sleep(30)
 
         # Initialize pygame for visualization
         pygame.init()
@@ -147,13 +147,16 @@ class CarlaLapEnv(gym.Env):
             # Connect to carla
             self.client = carla.Client(host, port)
             self.client.set_timeout(60.0)
+            self.client.load_world("Town07")
 
             # Create world wrapper
             self.world = World(self.client)
 
+
             if self.synchronous:
                 settings = self.world.get_settings()
                 settings.synchronous_mode = True
+                settings.fixed_delta_seconds = 0.05
                 self.world.apply_settings(settings)
 
             # Get spawn location
@@ -223,9 +226,10 @@ class CarlaLapEnv(gym.Env):
             ticks = 0
             while ticks < self.fps * 2:
                 self.world.tick()
+                #ticks += 1
                 try:
-                    # time.sleep(((1.0/self.fps) + 0.1))
-                    self.world.wait_for_tick(self, seconds=((1.0/self.fps) + 0.1))
+                    #time.sleep(((1.0/self.fps) + 0.1))
+                    self.world.wait_for_tick()
                     ticks += 1
                 except:
                     pass
@@ -344,7 +348,7 @@ class CarlaLapEnv(gym.Env):
             self.clock.tick()
             while True:
                 try:
-                    self.world.wait_for_tick(seconds=1.0/self.fps + 0.1)
+                    self.world.wait_for_tick()
                     break
                 except:
                     # Timeouts happen occasionally for some reason, however, they seem to be fine to ignore
@@ -392,6 +396,7 @@ class CarlaLapEnv(gym.Env):
         
         # Get lap count
         self.laps_completed = (self.current_waypoint_index - self.start_waypoint_index) / len(self.route_waypoints)
+
         if self.laps_completed >= 3:
             # End after 3 laps
             self.terminal_state = True

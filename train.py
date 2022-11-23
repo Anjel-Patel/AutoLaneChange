@@ -1,14 +1,17 @@
 import os
 os.environ["CARLA_ROOT"]="/opt/carla-simulator/"
+os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 
 import random
 import shutil
 
 import numpy as np
 import tensorflow as tf
-config = tf.compat.v1.ConfigProto()
+
+#Compat fix for CuBlass
+config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
-session = tf.compat.v1.Session(config=config)
+session = tf.Session(config=config)
 
 from vae_common import create_encode_state_fn, load_vae
 from ppo import PPO
@@ -247,8 +250,8 @@ if __name__ == "__main__":
     parser.add_argument("--vae_z_dim", type=int, default=None, help="Size of VAE bottleneck")
 
     # Environment settings
-    parser.add_argument("--synchronous", type=int, default=True, help="Set this to True when running in a synchronous environment")
-    parser.add_argument("--fps", type=int, default=30, help="Set this to the FPS of the environment")
+    parser.add_argument("--synchronous", type=int, default=False, help="Set this to True when running in a synchronous environment")
+    parser.add_argument("--fps", type=int, default=60, help="Set this to the FPS of the environment")
     parser.add_argument("--action_smoothing", type=float, default=0.0, help="Action smoothing factor")
     parser.add_argument("-start_carla", action="store_true", help="Automatically start CALRA with the given environment settings")
 
@@ -260,7 +263,7 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int, default=0,
                         help="Seed to use. (Note that determinism unfortunately appears to not be garuanteed " +
                              "with this option in our experience)")
-    parser.add_argument("--eval_interval", type=int, default=5, help="Number of episodes between evaluation runs")
+    parser.add_argument("--eval_interval", type=int, default=100, help="Number of episodes between evaluation runs")
     parser.add_argument("--record_eval", type=bool, default=True,
                         help="If True, save videos of evaluation episodes " +
                              "to models/model_name/videos/")

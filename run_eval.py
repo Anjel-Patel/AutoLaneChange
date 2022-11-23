@@ -50,6 +50,7 @@ def run_eval(env, model, video_filename=None):
     episode_idx = model.get_episode_idx()
 
     # While non-terminal state
+    terminal_custom_counter = 0
     while not terminal:
         env.extra_info.append("Episode {}".format(episode_idx))
         env.extra_info.append("Running eval...".format(episode_idx))
@@ -58,8 +59,11 @@ def run_eval(env, model, video_filename=None):
         # Take deterministic actions at test time (std=0)
         action, _ = model.predict(state, greedy=True)
         state, reward, terminal, info = env.step(action)
+        terminal_custom_counter+=1
+        print(f"Terminal = {terminal} : frame = {terminal_custom_counter}")
 
         if info["closed"] == True:
+            print("info closed")
             break
 
         # Add frame
@@ -97,7 +101,7 @@ if __name__ == "__main__":
     parser.add_argument("--synchronous", type=int, default=False, help="Set this to True when running in a synchronous environment")
     parser.add_argument("--fps", type=int, default=30, help="Set this to the FPS of the environment")
     parser.add_argument("--action_smoothing", type=float, default=0.0, help="Action smoothing factor")
-    parser.add_argument("-start_carla", action="store_true", help="Automatically start CALRA with the given environment settings")
+    parser.add_argument("-start_carla", action="store_true", help="Automatically start CARLA with the given environment settings")
 
     # Recording    
     parser.add_argument("--record_to_file", type=str, default=None, help="File to record evaluation video to (outputs in .avi format)")
