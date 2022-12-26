@@ -49,7 +49,7 @@ class CarlaLapEnv(gym.Env):
                  viewer_res=(1280, 720), obs_res=(1280, 720),
                  reward_fn=None, encode_state_fn=None, 
                  synchronous=False, fps=30, action_smoothing=0.9,
-                 start_carla=True):
+                 start_carla=True, no_of_vehicles=30):
         """
             Initializes a gym-like environment that can be used to interact with CARLA.
 
@@ -119,6 +119,16 @@ class CarlaLapEnv(gym.Env):
             #     if "LogCarla: Number Of Vehicles" in line:
             #         break
             time.sleep(30)
+            print("Adding traffic with ")
+            generate_traffic_root = os.path.join(os.environ["CARLA_ROOT"], "PythonAPI/examples/generate_traffic.py")
+            launch_command.clear()
+            launch_command = ["python"]
+            launch_command += [generate_traffic_root]
+            launch_command += [f"-n {no_of_vehicles}"]
+            self.traffic_generation = subprocess.Popen(launch_command, stdout=subprocess.PIPE, universal_newlines=True)
+            print(f"{no_of_vehicles} Vehicles spawned in Carla")
+            time.sleep(5)
+
 
         # Initialize pygame for visualization
         pygame.init()
@@ -205,6 +215,8 @@ class CarlaLapEnv(gym.Env):
         # Do a soft reset (teleport vehicle)
         self.vehicle.control.steer = float(0.0)
         self.vehicle.control.throttle = float(0.0)
+        self.vehicle.collision_sensor.intensity = 0 #Need to reset car's last collision incident
+        print("RESET VEHICLE COLLISION INTENSITY DONE !!!!!!!")
         #self.vehicle.control.brake = float(0.0)
         self.vehicle.tick()
         if is_training:
@@ -263,6 +275,8 @@ class CarlaLapEnv(gym.Env):
     def close(self):
         if self.carla_process:
             self.carla_process.terminate()
+        if self.traffic_generation:
+            self.traffic_generation.terminate()
         pygame.quit()
         if self.world is not None:
             self.world.destroy()

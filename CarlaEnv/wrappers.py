@@ -89,6 +89,9 @@ class CollisionSensor(CarlaActorBase):
         # Collision history
         self.history = []
 
+        #Collision instensity
+        self.intensity = 0
+
         # Setup sensor blueprint
         bp = world.get_blueprint_library().find("sensor.other.collision")
 
@@ -108,6 +111,13 @@ class CollisionSensor(CarlaActorBase):
         # Call on_collision_fn
         if callable(self.on_collision_fn):
             self.on_collision_fn(event)
+
+        impulse = event.normal_impulse
+        self.intensity = math.sqrt(impulse.x**2 + impulse.y**2 + impulse.z**2)
+    
+    def get_collision_impulse_intensity(self):
+        return self.intensity
+
 
 
 #===============================================================================

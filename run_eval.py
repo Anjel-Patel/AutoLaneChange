@@ -89,8 +89,8 @@ if __name__ == "__main__":
     parser.add_argument("--model_name", type=str, required=False, help="Name of the model to train. Output written to models/model_name", 
                         default="pretrained_agent")
     parser.add_argument("--reward_fn", type=str,
-                        default="reward_speed_centering_angle_multiply",
-                        help="Reward function to use. See reward_functions.py for more info.")
+                        default="highway_reward",
+                        help="Reward function to use. See reward_functions.py for more info. This would errors if any other reward function is used instead of highway_reward due to the acceleration being added to the reward function")
     parser.add_argument("--vae_model", type=str,
                         default="vae/models/seg_bce_cnn_zdim64_beta1_kl_tolerance0.0_data/",
                         help="Trained VAE model to load")

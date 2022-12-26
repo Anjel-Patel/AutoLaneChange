@@ -258,8 +258,8 @@ if __name__ == "__main__":
     # Training parameters
     parser.add_argument("--model_name", type=str, required=True, help="Name of the model to train. Output written to models/model_name")
     parser.add_argument("--reward_fn", type=str,
-                        default="reward_speed_centering_angle_multiply",
-                        help="Reward function to use. See reward_functions.py for more info.")
+                        default="highway_reward", 
+                        help="Reward function to use. See reward_functions.py for more info. This would errors if any other reward function is used instead of highway_reward due to the acceleration being added to the reward function")
     parser.add_argument("--seed", type=int, default=0,
                         help="Seed to use. (Note that determinism unfortunately appears to not be garuanteed " +
                              "with this option in our experience)")
