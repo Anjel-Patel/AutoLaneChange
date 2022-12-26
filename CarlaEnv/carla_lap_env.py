@@ -119,15 +119,6 @@ class CarlaLapEnv(gym.Env):
             #     if "LogCarla: Number Of Vehicles" in line:
             #         break
             time.sleep(30)
-            print("Adding traffic with ")
-            generate_traffic_root = os.path.join(os.environ["CARLA_ROOT"], "PythonAPI/examples/generate_traffic.py")
-            launch_command.clear()
-            launch_command = ["python"]
-            launch_command += [generate_traffic_root]
-            launch_command += [f"-n {no_of_vehicles}"]
-            self.traffic_generation = subprocess.Popen(launch_command, stdout=subprocess.PIPE, universal_newlines=True)
-            print(f"{no_of_vehicles} Vehicles spawned in Carla")
-            time.sleep(5)
 
 
         # Initialize pygame for visualization
@@ -162,6 +153,16 @@ class CarlaLapEnv(gym.Env):
             # Create world wrapper
             self.world = World(self.client)
 
+            # Create traffic in loaded map
+            print("Adding traffic with ")
+            generate_traffic_root = os.path.join(os.environ["CARLA_ROOT"], "PythonAPI/examples/generate_traffic.py")
+            launch_command.clear()
+            launch_command = ["python"]
+            launch_command += [generate_traffic_root]
+            launch_command += [f"-n {no_of_vehicles}"]
+            self.traffic_generation = subprocess.Popen(launch_command, stdout=subprocess.PIPE, universal_newlines=True)
+            print(f"{no_of_vehicles} Vehicles spawned in Carla")
+            time.sleep(5)
 
             if self.synchronous:
                 settings = self.world.get_settings()

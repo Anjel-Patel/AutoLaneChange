@@ -6,7 +6,7 @@ import datetime
 low_speed_timer = 0
 acceleration = 0
 max_distance    = 3.0  # Max distance from center before terminating
-target_speed    = 60 # kmh
+target_speed    = 35 # kmh
 
 def create_reward_fn(reward_fn, max_speed=-1):
     """
@@ -161,7 +161,7 @@ reward_functions["reward_speed_centering_angle_multiply"] = create_reward_fn(rew
 
 def highway_reward(env, prev_accel = 0):
     min_speed = 15 # km/h
-    max_speed = 80 #km/h
+    max_speed = 55 #km/h
     max_speed_cross_penalty_factor = 0.2
 
     speed = 3.6 * env.vehicle.get_speed()
@@ -188,7 +188,7 @@ def highway_reward(env, prev_accel = 0):
     # Collision penalty
     collision_intensity = env.vehicle.collision_sensor.get_collision_impulse_intensity()
     collision_penalty = -math.log(max(1,collision_intensity),10)
-    collision_penalty = 0
+    # collision_penalty = 0
 
     #Jerk Penalty
     jerk_scale_factor = 1
