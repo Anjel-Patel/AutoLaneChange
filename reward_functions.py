@@ -6,7 +6,7 @@ import datetime
 low_speed_timer = 0
 acceleration = 0
 max_distance    = 3.0  # Max distance from center before terminating
-target_speed    = 35 # kmh
+target_speed    = 60 # kmh
 
 def create_reward_fn(reward_fn, max_speed=-1):
     """
@@ -161,19 +161,19 @@ reward_functions["reward_speed_centering_angle_multiply"] = create_reward_fn(rew
 
 def highway_reward(env, prev_accel = 0):
     min_speed = 15 # km/h
-    max_speed = 55 #km/h
+    max_speed = 105 #km/h
     max_speed_cross_penalty_factor = 0.2
 
     speed = 3.6 * env.vehicle.get_speed()
     if speed <= min_speed: 
-        spd_reward = ((speed- min_speed)/ min_speed)
+        spd_reward = 0.5*(speed/ min_speed)
     elif speed > min_speed and speed <= target_speed:
-        spd_reward = 1- ((target_speed - speed)/(target_speed - min_speed))
+        spd_reward = 1- ((target_speed - speed)/(target_speed - min_speed)*0.5)
     elif speed > target_speed and speed <= max_speed:
-        spd_reward = ((max_speed-speed)/(max_speed-target_speed))
+        spd_reward = 0.5 + (0.5*(max_speed-speed)/(max_speed-target_speed))
     else: 
-        spd_reward = -1 + (-1*(speed - max_speed)*max_speed_cross_penalty_factor) # Reward tapers from -1 to -inf at penalty_factor rate
-
+        spd_reward = 0.5 + (-1*(speed - max_speed)*max_speed_cross_penalty_factor) # Reward tapers from -1 to -inf at penalty_factor rate
+    #spd_reward=1+spd_reward
     fwd    = vector(env.vehicle.get_velocity())
     accel  = vector(env.vehicle.get_acceleration())
     wp_fwd = vector(env.current_waypoint.transform.rotation.get_forward_vector())
@@ -187,8 +187,8 @@ def highway_reward(env, prev_accel = 0):
 
     # Collision penalty
     collision_intensity = env.vehicle.collision_sensor.get_collision_impulse_intensity()
-    collision_penalty = -math.log(max(1,collision_intensity),10)
-    # collision_penalty = 0
+    collision_penalty = max(-1, -math.log(max(1,collision_intensity),10))
+    #collision_penalty = 0
 
     #Jerk Penalty
     jerk_scale_factor = 1
@@ -196,10 +196,11 @@ def highway_reward(env, prev_accel = 0):
     jerk = math.sqrt((jerk[0]**2)*0 + jerk[1]**2 + (jerk[2]**2)*0)
     jerk_corrected = np.log10(max(jerk*jerk_scale_factor, 1))/3
     jerk_penalty = min(jerk_corrected, 1)
+    jerk_penalty = 0
     tm=str(datetime.datetime.now()).split(' ')
-    print(f"[{tm[1]}]----------------REWARD COMPONENTS--------------")
-    print(f"Speed Reward: {spd_reward}\nCentering Reward: {centering_factor}\nAngle Reward: {angle_factor}\nJerk Penalty: {jerk_penalty}\nCollision Penalty: {collision_penalty}\n")
-    return ((spd_reward + centering_factor + angle_factor) + collision_penalty - (jerk_penalty/5)), accel
+    #print(f"[{tm[1]}]----------------REWARD COMPONENTS--------------")
+    #print(f"Speed Reward: {spd_reward}\nCentering Reward: {centering_factor}\nAngle Reward: {angle_factor}\nJerk Penalty: {jerk_penalty}\nCollision Penalty: {collision_penalty}\n")
+    return ((spd_reward * centering_factor * angle_factor) + collision_penalty - (jerk_penalty/5)), accel
 
 
 reward_functions["highway_reward"] = create_reward_fn(highway_reward)

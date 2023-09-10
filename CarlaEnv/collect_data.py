@@ -327,3 +327,6 @@ if __name__ == "__main__":
         
     # Destroy carla actors
     data_collector.close()
+
+
+

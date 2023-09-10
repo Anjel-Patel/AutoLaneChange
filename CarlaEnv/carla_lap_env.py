@@ -153,7 +153,7 @@ class CarlaLapEnv(gym.Env):
             # Create world wrapper
             self.world = World(self.client)
 
-            # Create traffic in loaded map
+            #Create traffic in loaded map
             print("Adding traffic with ")
             generate_traffic_root = os.path.join(os.environ["CARLA_ROOT"], "PythonAPI/examples/generate_traffic.py")
             launch_command.clear()
@@ -196,6 +196,7 @@ class CarlaLapEnv(gym.Env):
                                   attach_to=self.vehicle, on_recv_image=lambda e: self._set_viewer_image(e),
                                   sensor_tick=0.0 if self.synchronous else 1.0/self.fps)
         except Exception as e:
+            print(e)
             self.close()
             raise e
 
@@ -211,6 +212,9 @@ class CarlaLapEnv(gym.Env):
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
+
+
+
 
     def reset(self, is_training=True):
         # Do a soft reset (teleport vehicle)
@@ -276,8 +280,8 @@ class CarlaLapEnv(gym.Env):
     def close(self):
         if self.carla_process:
             self.carla_process.terminate()
-        if self.traffic_generation:
-            self.traffic_generation.terminate()
+        # if self.traffic_generation:
+        #     self.traffic_generation.terminate()
         pygame.quit()
         if self.world is not None:
             self.world.destroy()

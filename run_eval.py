@@ -48,7 +48,6 @@ def run_eval(env, model, video_filename=None):
         video_recorder = None
 
     episode_idx = model.get_episode_idx()
-
     # While non-terminal state
     terminal_custom_counter = 0
     while not terminal:
@@ -71,7 +70,7 @@ def run_eval(env, model, video_filename=None):
         if video_recorder is not None:
             video_recorder.add_frame(rendered_frame)
         total_reward += reward
-
+    model.write_episodic_summaries()
     # Release video
     if video_recorder is not None:
         video_recorder.release()
@@ -139,7 +138,7 @@ if __name__ == "__main__":
     input_shape = np.array([vae.z_dim + len(measurements_to_include)])
     model = PPO(input_shape, env.action_space,
                 model_dir=os.path.join("models", args.model_name))
-    model.init_session(init_logging=False)
+    model.init_session(init_logging=True)
     model.load_latest_checkpoint()
 
     # Run eval

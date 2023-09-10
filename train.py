@@ -135,21 +135,22 @@ def train(params, start_carla=True, restart=False):
             model.write_value_to_summary("eval/center_lane_deviation", env.center_lane_deviation, episode_idx)
             model.write_value_to_summary("eval/average_center_lane_deviation", env.center_lane_deviation / env.step_count, episode_idx)
             model.write_value_to_summary("eval/distance_over_deviation", env.distance_traveled / env.center_lane_deviation, episode_idx)
-            if eval_reward > best_eval_reward:
-                model.save()
+            model.save()
+            if eval_reward >best_eval_reward:
                 best_eval_reward = eval_reward
 
         # Reset environment
         state, terminal_state, total_reward = env.reset(), False, 0
         
         # While episode not done
-        print(f"Episode {episode_idx} (Step {model.get_train_step_idx()})")
+        # print(f"Episode {episode_idx} (Step {model.get_train_step_idx()})")
         while not terminal_state:
             states, taken_actions, values, rewards, dones = [], [], [], [], []
             for _ in range(horizon):
                 action, value = model.predict(state, write_to_summary=True)
 
                 # Perform action
+                
                 new_state, reward, terminal_state, info = env.step(action)
 
                 if info["closed"] == True:
@@ -263,7 +264,7 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int, default=0,
                         help="Seed to use. (Note that determinism unfortunately appears to not be garuanteed " +
                              "with this option in our experience)")
-    parser.add_argument("--eval_interval", type=int, default=100, help="Number of episodes between evaluation runs")
+    parser.add_argument("--eval_interval", type=int, default=10, help="Number of episodes between evaluation runs")
     parser.add_argument("--record_eval", type=bool, default=True,
                         help="If True, save videos of evaluation episodes " +
                              "to models/model_name/videos/")

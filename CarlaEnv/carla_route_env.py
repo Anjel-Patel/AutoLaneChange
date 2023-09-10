@@ -191,7 +191,7 @@ class CarlaRouteEnv(gym.Env):
         self.num_routes_completed = -1
         self.new_route()
 
-        # Set env vars
+        # Set env varsi
         self.terminal_state = False # Set to True when we want to end episode
         self.closed = False         # Set to True when ESC is pressed
         self.extra_info = []        # List of extra info shown on the HUD

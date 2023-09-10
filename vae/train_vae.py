@@ -10,7 +10,7 @@ from PIL import Image
 import tensorflow as tf
 config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
-session = tf.compat.v1.Session(config=config)
+session = tf.compat.v1.Session(config=config)tenso
 import matplotlib.pyplot as plt
 
 from models import ConvVAE, MlpVAE, bce_loss, bce_loss_v2, mse_loss
