@@ -1,3 +1,9 @@
 #!/bin/bash
-# python run_eval.py -start_carla --model_name test_model1 --reward_fn highway_reward
-python train.py -start_carla --model_name hc_v6 --reward_fn highway_reward  
+#### CuRLA ####
+# python train.py -start_carla --model_name hc_v6 --reward_fn highway_reward
+
+#### One-Fold CL ####
+# python train.py -start_carla --model_name hc_v4 --reward_fn highway_reward
+
+#### SCA ####
+# python train.py -start_carla --model_name sca --reward_fn reward_speed_centering_angle_multiply  
