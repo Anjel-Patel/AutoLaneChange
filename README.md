@@ -1,7 +1,7 @@
 # CuRLA
 
 ## About the Project
-This project is the supporting codebase to the [CuRLA](https://www.scitepress.org/Papers/2025/131470/131470.pdf)[[arXiv](https://arxiv.org/abs/2501.04982)] paper.
+This project is the supporting codebase to the [CuRLA](https://www.scitepress.org/Papers/2025/131470/131470.pdf) [[arXiv](https://arxiv.org/abs/2501.04982)] paper.
 
 We have used the urban driving simulator [CARLA](http://carla.org/) (version 0.9.5) as our environment.
 
